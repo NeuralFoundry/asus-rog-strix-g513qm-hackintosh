@@ -110,7 +110,7 @@ Do not run UMAF as an OpenCore tool: with emulated NVRAM the setup variable migh
 | Battery status | Working |
 | USB map (UTBMap, identical to the G513IC map) | Working |
 | Sleep | Untested, not expected to work |
-| dGPU | SSDT ready, test pending (Eco mode does not disable it in firmware) |
+| dGPU | `SSDT-dGPU-Off.aml` (GPP0.M237._OFF) included but not yet verified; Eco mode does not disable the dGPU in firmware |
 
 ## Tools
 
