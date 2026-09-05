@@ -1,4 +1,4 @@
-# ASUS ROG Strix G15 G513QM (Ryzen 7 5800H + Vega 8) — macOS Sequoia 15.7.9 OpenCore EFI
+# ASUS ROG Strix G15 G513QM (Ryzen 7 5800H + Vega 8)  macOS Sequoia 15.7.9 OpenCore EFI
 
 OpenCore 1.0.7 EFI and the machine-specific findings needed to run macOS Sequoia 15.7.9 in dual boot
 (Windows 11 + macOS) on the ASUS ROG Strix G513QM (2021). Most of it applies to the whole Cezanne family
