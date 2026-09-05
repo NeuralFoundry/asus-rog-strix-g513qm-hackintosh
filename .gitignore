@@ -1,0 +1,6 @@
+NVRAM/
+opencore-*.txt
+panic-*.txt
+.DS_Store
+EFI/OC/Kexts/NootedRed.kext/
+EFI/OC/Kexts/ForgedInvariant.kext/
