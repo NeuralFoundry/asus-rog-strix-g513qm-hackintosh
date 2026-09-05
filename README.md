@@ -55,6 +55,10 @@ Additional notes:
   `ResizeAppleGpuBars = 0`.
 - The installer's Wi-Fi menu cannot see itlwm. Either use Ethernet or store your SSID/password in itlwm with
   `tools/itlwm-wifi-config.py` so it auto-connects.
+- Typing the Wi-Fi password into HeliPort on a Turkish macOS keyboard is a trap: `@` is Option+Q, not AltGr+Q.
+  A wrong password shows up as "connected" followed by "disconnected" 8 s later. The reliable fix is to put the
+  SSID/password into `itlwm.kext/Contents/Info.plist` (`IOKitPersonalities → itlwm → WiFiConfig`); the driver then
+  joins the network at boot and HeliPort is only a status icon. `tools/itlwm-wifi-config.py` does this from Windows.
 - If the recovery "Reinstall" download keeps failing, use a full installer USB. `tools/write-usb-raw-image.ps1`
   writes a raw installer image to a USB stick from Windows; `tools/edit-usb-efi.ps1` mounts the stick's EFI
   partition on Windows and runs an edit script against it.
@@ -105,11 +109,11 @@ Do not run UMAF as an OpenCore tool: with emulated NVRAM the setup variable migh
 | Audio (speakers, microphone) | Working |
 | Keyboard (PS/2), trackpad (I2C) | Working |
 | Ethernet | Working |
-| Wi-Fi (itlwm + HeliPort) | Working |
+| Wi-Fi (itlwm) | Working; credentials stored in the kext (`WiFiConfig`) so it joins at boot without HeliPort |
 | Bluetooth | Kexts load (IntelBluetoothFirmware, IntelBTPatcher, BlueToolFixup); pairing test pending |
 | Battery status | Working |
 | USB map (UTBMap, identical to the G513IC map) | Working |
-| Sleep | Untested, not expected to work |
+| Sleep | Disabled on purpose (`pmset -a sleep 0 disksleep 0 standby 0 autopoweroff 0 hibernatemode 0`) |
 | dGPU | `SSDT-dGPU-Off.aml` (GPP0.M237._OFF) included but not yet verified; Eco mode does not disable the dGPU in firmware |
 
 ## Tools
