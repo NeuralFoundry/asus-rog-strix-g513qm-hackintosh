@@ -15,7 +15,7 @@ of ASUS laptops (G513Q*, G713Q*, TUF FA506Q* with Ryzen 5800H/5900HX).
 | iGPU | Radeon Vega 8 (0x1638) | NootedRed, Metal 3, 4 GB VRAM (UMA size set with Smokeless UMAF) |
 | dGPU | NVIDIA RTX 3060 Mobile | Unsupported by macOS; disabled via SSDT |
 | Panel | InnoLux N156HRA-EA1, 1080p 144 Hz | Needs a 60 Hz-preferred EDID injection |
-| Wi-Fi / BT | Intel AX200 | itlwm + HeliPort / IntelBluetoothFirmware |
+| Wi-Fi / BT | Intel AX200 | itlwm (in-kext WiFiConfig) / IntelBluetoothFirmware 2.5.0 + BlueToolFixup |
 | Ethernet | Realtek RTL8168 | RealtekRTL8111 |
 | Audio | Realtek ALC285 | AppleALC, `alcid=21` |
 | NVMe 1 | SK Hynix BC711 (HFM001TD3JX013N, Windows drive) | **Kernel panics macOS; hidden from it** |
@@ -59,6 +59,11 @@ Additional notes:
   A wrong password shows up as "connected" followed by "disconnected" 8 s later. The reliable fix is to put the
   SSID/password into `itlwm.kext/Contents/Info.plist` (`IOKitPersonalities → itlwm → WiFiConfig`); the driver then
   joins the network at boot and HeliPort is only a status icon. `tools/itlwm-wifi-config.py` does this from Windows.
+- Bluetooth diagnostics that finally explained it: add `DebugEnhancer.kext` and read `sudo dmesg | grep IntelFirmware`.
+  The firmware upload (`ibt-20-1-3.sfi`) completes 3 s after boot; `fw_name` in ioreg stays empty (cosmetic). With the
+  2.4.0 release kexts the Apple stack never adopted the controller; with the 2.5.0 builds it does, but only a few minutes
+  after login, so do not judge the result 30 s after boot. On Sequoia `bluetoothd` opens the USB interfaces directly
+  (no kernel transport object appears in ioreg).
 - If the recovery "Reinstall" download keeps failing, use a full installer USB. `tools/write-usb-raw-image.ps1`
   writes a raw installer image to a USB stick from Windows; `tools/edit-usb-efi.ps1` mounts the stick's EFI
   partition on Windows and runs an edit script against it.
@@ -130,7 +135,7 @@ so a frozen session does not relaunch Chrome at the next login.
 | Keyboard (PS/2), trackpad (I2C) | Working |
 | Ethernet | Working |
 | Wi-Fi (itlwm) | Working; credentials stored in the kext (`WiFiConfig`) so it joins at boot without HeliPort |
-| Bluetooth | **Not working yet**: AX200 firmware never gets uploaded (`fw_name` empty, controller shows as BCM_4350C2 / Off). Tried 2.4.0 and 2.5.0 builds, with/without IntelBTPatcher, BlueToolFixup 2.6.9/2.7.2, `-btlfxallowanyaddr`, NVRAM bluetooth* add/delete. Investigation ongoing (DebugEnhancer + `sudo dmesg`) |
+| Bluetooth | Working (AX200): IntelBluetoothFirmware + IntelBTPatcher **2.5.0 master builds** (the 2.4.0 release predates Sequoia support) + BlueToolFixup 2.7.2, `-btlfxallowanyaddr`, `bluetoothExternalDongleFailed`/`bluetoothInternalControllerInfo` NVRAM add+delete. The controller shows Off/NULL for the first few minutes after boot, then bluetoothd picks it up |
 | Battery status | Working |
 | USB map (UTBMap, identical to the G513IC map) | Working |
 | Sleep | Disabled on purpose (`pmset -a sleep 0 disksleep 0 standby 0 autopoweroff 0 hibernatemode 0`) |
