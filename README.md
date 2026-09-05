@@ -12,7 +12,7 @@ of ASUS laptops (G513Q*, G713Q*, TUF FA506Q* with Ryzen 5800H/5900HX).
 | Component | Model | Status |
 |---|---|---|
 | CPU | AMD Ryzen 7 5800H (8C/16T, Cezanne) | Working (AMD_Vanilla patches, all 16 threads) |
-| iGPU | Radeon Vega 8 (0x1638) | NootedRed; framebuffer-only for now (see the 144 Hz panel note) |
+| iGPU | Radeon Vega 8 (0x1638) | NootedRed, Metal 3, 4 GB VRAM (UMA size set with Smokeless UMAF) |
 | dGPU | NVIDIA RTX 3060 Mobile | Unsupported by macOS; disabled via SSDT |
 | Panel | InnoLux N156HRA-EA1, 1080p 144 Hz | Needs a 60 Hz-preferred EDID injection |
 | Wi-Fi / BT | Intel AX200 | itlwm + HeliPort / IntelBluetoothFirmware |
@@ -59,6 +59,20 @@ Additional notes:
   writes a raw installer image to a USB stick from Windows; `tools/edit-usb-efi.ps1` mounts the stick's EFI
   partition on Windows and runs an edit script against it.
 
+## VRAM: raising the UMA frame buffer size (512 MB → 4 GB)
+
+The ASUS BIOS hides the AMD CBS menu, so the iGPU only gets the default 512 MB carve-out. With
+[Smokeless_UMAF](https://github.com/DavidS95/Smokeless_UMAF) (Universal AMD Form Browser) you can change it:
+
+1. Format a spare USB stick as FAT32 and copy the contents of `UniversalAMDFormBrowser.zip` onto it
+   (`EFI/Boot/Bootx64.efi` plus `DisplayEngine.efi`, `SetupBrowser.efi`, `UiApp.efi` in the root).
+   `tools/write-umaf-usb.ps1` does this from Windows.
+2. Boot the stick (Esc → UEFI: USB). Go to **Device Manager → AMD CBS → NBIO Common Options → GFX Configuration**.
+3. Set **iGPU Configuration = UMA_SPECIFIED** and **UMA Frame buffer Size = 4G**. Change nothing else.
+4. Leave with Esc, confirm saving, reboot. macOS then reports 4 GB VRAM.
+
+Do not run UMAF as an OpenCore tool: with emulated NVRAM the setup variable might not reach the firmware.
+
 ## Not included (add these yourself)
 
 - **NootedRed.kext** and **ForgedInvariant.kext** (ChefKiss). They are intentionally not redistributed here;
@@ -87,12 +101,12 @@ Additional notes:
 | Component | Status |
 |---|---|
 | CPU boost, 16 threads | Working |
-| iGPU (NootedRed) | Working in framebuffer-only mode (`-NRedNoAccel`); EDID + acceleration test pending |
+| iGPU (NootedRed) | Working with acceleration (Metal 3); 4 GB VRAM after raising the UMA size in the hidden BIOS menu |
 | Audio (speakers, microphone) | Working |
 | Keyboard (PS/2), trackpad (I2C) | Working |
 | Ethernet | Working |
 | Wi-Fi (itlwm + HeliPort) | Working |
-| Bluetooth | Kexts included (IntelBluetoothFirmware), test pending |
+| Bluetooth | Kexts load (IntelBluetoothFirmware, IntelBTPatcher, BlueToolFixup); pairing test pending |
 | Battery status | Working |
 | USB map (UTBMap, identical to the G513IC map) | Working |
 | Sleep | Untested, not expected to work |
@@ -107,6 +121,7 @@ Additional notes:
 | `tools/itlwm-wifi-config.py` | Store SSID/password in itlwm's Info.plist for auto-connect in the installer |
 | `tools/edid-tool.py` | Parse an EDID and produce the 60 Hz-preferred, RGB-only variant |
 | `tools/copy-efi-to-esp.sh` | On the Mac: copy the EFI folder to the internal drive's EFI partition |
+| `tools/write-umaf-usb.ps1` | Prepare a Smokeless UMAF boot stick from Windows (run as administrator) |
 | `acpi-sources/*.dsl` | Sources of the two machine-specific SSDTs |
 | `docs/edid-*.bin` | Original and patched panel EDID |
 
