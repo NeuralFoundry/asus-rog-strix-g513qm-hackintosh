@@ -80,7 +80,7 @@
 			</dict>
 			<dict>
 				<key>Comment</key>
-				<string>SK Hynix BC711 hidden under Darwin (IONVMeFamily kernel panic)</string>
+				<string>SK Hynix BC711 Darwin'de gizli (kernel panic)</string>
 				<key>Enabled</key>
 				<true/>
 				<key>Path</key>
@@ -603,6 +603,16 @@
 				/////w==
 				</data>
 			</dict>
+			<key>PciRoot(0x0)/Pci(0x8,0x1)/Pci(0x0,0x0)</key>
+			<dict>
+				<key>AAPL00,override-no-connect</key>
+				<data>
+				AP///////wANriEVAAAAAAEeAQSlIhN4Ayhll1lUjice
+				UFQAAAABAQEBAQEBAQEBAQEBAQEBrTeAoHA4PkAwIKUA
+				WMEQAAAYAAAAEAAgICAgICAgICAgICAgAAAA/QAwkKWl
+				IgEKICAgICAgAAAA/gBOMTU2SFJBLUVBMQogAG8=
+				</data>
+			</dict>
 		</dict>
 		<key>Delete</key>
 		<dict/>
@@ -761,7 +771,7 @@
 				<key>BundlePath</key>
 				<string>IntelBluetoothFirmware.kext</string>
 				<key>Comment</key>
-				<string>Intel AX200 Bluetooth</string>
+				<string>AX200 Bluetooth</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -779,7 +789,7 @@
 				<key>BundlePath</key>
 				<string>IntelBTPatcher.kext</string>
 				<key>Comment</key>
-				<string>Intel AX200 Bluetooth</string>
+				<string>AX200 Bluetooth</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -797,7 +807,7 @@
 				<key>BundlePath</key>
 				<string>BlueToolFixup.kext</string>
 				<key>Comment</key>
-				<string>Intel AX200 Bluetooth</string>
+				<string>AX200 Bluetooth</string>
 				<key>Enabled</key>
 				<true/>
 				<key>ExecutablePath</key>
@@ -1198,6 +1208,24 @@
 				<true/>
 				<key>ExecutablePath</key>
 				<string>Contents/MacOS/ECEnabler</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>x86_64</string>
+				<key>BundlePath</key>
+				<string>DebugEnhancer.kext</string>
+				<key>Comment</key>
+				<string>kernel log to dmesg (diagnostics)</string>
+				<key>Enabled</key>
+				<true/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/DebugEnhancer</string>
 				<key>MaxKernel</key>
 				<string></string>
 				<key>MinKernel</key>
@@ -2363,6 +2391,24 @@
 				<key>TextMode</key>
 				<false/>
 			</dict>
+			<dict>
+				<key>Arguments</key>
+				<string></string>
+				<key>Auxiliary</key>
+				<false/>
+				<key>Comment</key>
+				<string>Windows 11 on the SK Hynix ESP</string>
+				<key>Enabled</key>
+				<true/>
+				<key>Flavour</key>
+				<string>Windows</string>
+				<key>Name</key>
+				<string>Windows</string>
+				<key>Path</key>
+				<string>PciRoot(0x0)/Pci(0x2,0x4)/Pci(0x0,0x0)/NVMe(0x1,FF-FF-FF-FF-FF-FF-FF-FF)/HD(1,GPT,8E3B30B4-9523-4F84-818C-2D8A09B9C955,0x800,0x32000)/\EFI\Microsoft\Boot\bootmgfw.efi</string>
+				<key>TextMode</key>
+				<false/>
+			</dict>
 		</array>
 		<key>Security</key>
 		<dict>
@@ -2389,7 +2435,7 @@
 			<data>
 			</data>
 			<key>ScanPolicy</key>
-			<integer>0</integer>
+			<integer>17760515</integer>
 			<key>SecureBootModel</key>
 			<string>Disabled</string>
 			<key>Vault</key>
@@ -2461,8 +2507,16 @@
 				<data>
 				Rg==
 				</data>
+				<key>bluetoothExternalDongleFailed</key>
+				<data>
+				AA==
+				</data>
+				<key>bluetoothInternalControllerInfo</key>
+				<data>
+				AAAAAAAAAAAAAAAAAAA=
+				</data>
 				<key>boot-args</key>
-				<string>debug=0x100 keepsyms=1 -vi2c-force-polling amfi=0x80 npci=0x200 alcid=21 -NRedDPDelay -lilubetaall -NRedNoAccel</string>
+				<string>debug=0x100 keepsyms=1 -vi2c-force-polling amfi=0x80 npci=0x200 alcid=21 -NRedDPDelay -lilubetaall -btlfxallowanyaddr</string>
 				<key>csr-active-config</key>
 				<data>
 				AwgAAA==
@@ -2488,6 +2542,9 @@
 			<array>
 				<string>boot-args</string>
 				<string>ForceDisplayRotationInEFI</string>
+				<string>bluetoothInternalControllerInfo</string>
+				<string>bluetoothExternalDongleFailed</string>
+				<string>bluetoothActiveControllerInfo</string>
 			</array>
 		</dict>
 		<key>LegacyOverwrite</key>
@@ -2536,7 +2593,7 @@
 			<key>AdviseFeatures</key>
 			<false/>
 			<key>MLB</key>
-			<string>KENDI-MLB-DEGERINIZ</string>
+			<string>GENERATE-YOUR-OWN</string>
 			<key>MaxBIOSVersion</key>
 			<false/>
 			<key>ProcessorType</key>
@@ -2552,7 +2609,7 @@
 			<key>SystemProductName</key>
 			<string>MacBookPro16,2</string>
 			<key>SystemSerialNumber</key>
-			<string>KENDI-SERINIZI-URETIN</string>
+			<string>GENERATE-YOUR-OWN</string>
 			<key>SystemUUID</key>
 			<string>00000000-0000-0000-0000-000000000000</string>
 		</dict>
@@ -2646,7 +2703,7 @@
 				<key>Arguments</key>
 				<string></string>
 				<key>Comment</key>
-				<string>Emulated NVRAM (the ASUS firmware hangs on runtime NVRAM writes)</string>
+				<string>NVRAM oykunmesi (ASUS firmware NVRAM yaziminda donuyor)</string>
 				<key>Enabled</key>
 				<true/>
 				<key>LoadEarly</key>

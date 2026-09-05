@@ -77,6 +77,26 @@ The ASUS BIOS hides the AMD CBS menu, so the iGPU only gets the default 512 MB c
 
 Do not run UMAF as an OpenCore tool: with emulated NVRAM the setup variable might not reach the firmware.
 
+## macOS as the default picker entry (no NVRAM writes needed)
+
+With emulated NVRAM, `bless --setBoot` fails (`0xe00002e2`) and OpenCore cannot persist a default the usual way.
+The deterministic alternative used here: `Misc → Security → ScanPolicy = 0x10F0103` (scan APFS only, so the
+Windows ESP is not auto-discovered) plus a fixed `Misc → Entries` item for Windows pointing at
+`\EFI\Microsoft\Bootootmgfw.efi` on the other drive (full device path taken from the OpenCore log line
+`OCB: Registering entry Windows`). macOS is then listed first and boots automatically after `Timeout`.
+To also make the firmware boot the internal OpenCore first without pressing Esc, run
+`tools/windows-set-opencore-first.ps1` once from Windows (bcdedit adds the entry to the firmware boot order).
+
+## Chrome and other Chromium/Electron apps
+
+NootedRed does not implement the video engine (VCN), and Chrome's default Metal ANGLE backend can hang the GPU:
+in practice installing or launching Chrome froze the machine several times. Safe configuration:
+`--use-angle=gl --disable-accelerated-video-decode --disable-accelerated-video-encode` (an AppleScript launcher app
+made with `osacompile` that runs `open -a "Google Chrome" --args ...`), or the managed policy
+`defaults write com.google.Chrome HardwareAccelerationModeEnabled -bool false` if you prefer no GPU at all.
+Disable "reopen windows when logging back in" (`defaults write com.apple.loginwindow TALLogoutSavesState -bool false`)
+so a frozen session does not relaunch Chrome at the next login.
+
 ## Not included (add these yourself)
 
 - **NootedRed.kext** and **ForgedInvariant.kext** (ChefKiss). They are intentionally not redistributed here;
@@ -104,13 +124,13 @@ Do not run UMAF as an OpenCore tool: with emulated NVRAM the setup variable migh
 
 | Component | Status |
 |---|---|
-| CPU boost, 16 threads | Working |
+| CPU boost, 16 threads | Working (16-thread stress test for 60 s: no freeze) |
 | iGPU (NootedRed) | Working with acceleration (Metal 3); 4 GB VRAM after raising the UMA size in the hidden BIOS menu |
 | Audio (speakers, microphone) | Working |
 | Keyboard (PS/2), trackpad (I2C) | Working |
 | Ethernet | Working |
 | Wi-Fi (itlwm) | Working; credentials stored in the kext (`WiFiConfig`) so it joins at boot without HeliPort |
-| Bluetooth | Kexts load (IntelBluetoothFirmware, IntelBTPatcher, BlueToolFixup); pairing test pending |
+| Bluetooth | **Not working yet**: AX200 firmware never gets uploaded (`fw_name` empty, controller shows as BCM_4350C2 / Off). Tried 2.4.0 and 2.5.0 builds, with/without IntelBTPatcher, BlueToolFixup 2.6.9/2.7.2, `-btlfxallowanyaddr`, NVRAM bluetooth* add/delete. Investigation ongoing (DebugEnhancer + `sudo dmesg`) |
 | Battery status | Working |
 | USB map (UTBMap, identical to the G513IC map) | Working |
 | Sleep | Disabled on purpose (`pmset -a sleep 0 disksleep 0 standby 0 autopoweroff 0 hibernatemode 0`) |
@@ -126,6 +146,7 @@ Do not run UMAF as an OpenCore tool: with emulated NVRAM the setup variable migh
 | `tools/edid-tool.py` | Parse an EDID and produce the 60 Hz-preferred, RGB-only variant |
 | `tools/copy-efi-to-esp.sh` | On the Mac: copy the EFI folder to the internal drive's EFI partition |
 | `tools/write-umaf-usb.ps1` | Prepare a Smokeless UMAF boot stick from Windows (run as administrator) |
+| `tools/windows-set-opencore-first.ps1` | From Windows: put the internal OpenCore first in the firmware boot order (bcdedit) |
 | `acpi-sources/*.dsl` | Sources of the two machine-specific SSDTs |
 | `docs/edid-*.bin` | Original and patched panel EDID |
 
