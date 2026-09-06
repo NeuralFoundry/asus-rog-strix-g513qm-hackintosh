@@ -139,7 +139,7 @@ so a frozen session does not relaunch Chrome at the next login.
 | Battery status | Working |
 | USB map (UTBMap, identical to the G513IC map) | Working |
 | Sleep | Disabled on purpose (`pmset -a sleep 0 disksleep 0 standby 0 autopoweroff 0 hibernatemode 0`) |
-| dGPU | `SSDT-dGPU-Off.aml` (GPP0.M237._OFF) included but not yet verified; Eco mode does not disable the dGPU in firmware |
+| dGPU | Stays on (no driver, idle). `acpi-sources/SSDT-dGPU-Off.dsl` (GPP0.M237._OFF) together with `ResizeAppleGpuBars = 0` produced a black screen before the Apple logo on this machine, so the shipped `SSDT-dGPU-Off.aml` is the G513IC no-op variant; treat the M237 version as experimental |
 
 ## Tools
 
